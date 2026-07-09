@@ -14,6 +14,12 @@
     in
     {
       checks = {
+        # Check that all packages build
+        # TODO: impure examples (helm/image/pod) aren't packages yet; once their default.nix
+        #   is pure they join `self'.packages` and build here automatically (matches packages.nix).
+        packages = pkgs.linkFarm "kubenix-packages"
+          (pkgs.lib.mapAttrsToList (name: path: { inherit name path; }) self'.packages);
+
         # TODO: access "success" derivation with nice testing utils for nice output
         testing = wasSuccess examples.testing.config.testing;
         label-filtering = pkgs.callPackage ../tests/label-filtering.nix {
